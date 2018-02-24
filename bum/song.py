@@ -4,6 +4,7 @@ Get song info.
 import shutil
 import os
 import mpd
+import pathlib
 
 from . import brainz
 from . import util
@@ -32,19 +33,28 @@ def get_art(cache_dir, size, client):
 
     file_name = f"{song['artist']}_{song['album']}_{size}.jpg".replace("/", "")
     file_name = cache_dir / file_name
+    songdir  =  os.path.expanduser("~")+'/Music/'+'/'.join(song['file'].split('/')[:-1])
 
-    if file_name.is_file():
-        shutil.copy(file_name, cache_dir / "current.jpg")
-        print("album: Found cached art.")
+    for extension in ['.jpg','.jpeg','.png']:
+        art_name = songdir+'/cover'+extension
+        if os.path.exists(art_name): 
+            shutil.copy(pathlib.Path(art_name), cache_dir / "current.jpg")
+            print("album: Found local art.")
+            break
 
     else:
-        print("album: Downloading album art...")
+        if file_name.is_file():
+            shutil.copy(file_name, cache_dir / "current.jpg")
+            print("album: Found cached art.")
 
-        brainz.init()
-        album_art = brainz.get_cover(song, size)
+        else:
+            print("album: Downloading album art...")
 
-        if album_art:
-            util.bytes_to_file(album_art, cache_dir / file_name)
-            util.bytes_to_file(album_art, cache_dir / "current.jpg")
+            brainz.init()
+            album_art = brainz.get_cover(song, size)
 
-            print(f"album: Swapped art to {song['artist']}, {song['album']}.")
+            if album_art:
+                util.bytes_to_file(album_art, cache_dir / file_name)
+                util.bytes_to_file(album_art, cache_dir / "current.jpg")
+
+                print(f"album: Swapped art to {song['artist']}, {song['album']}.")
