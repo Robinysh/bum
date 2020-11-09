@@ -35,7 +35,8 @@ setuptools.setup(
         "Operating System :: POSIX :: Linux",
         "Programming Language :: Python :: 3.6",
     ],
-    packages=["bum"],
+    #packages=["bum"],
+    packages=setuptools.find_packages(),
     entry_points={
         "console_scripts": ["bum=bum.__main__:main"]
     },

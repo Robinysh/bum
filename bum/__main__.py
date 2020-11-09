@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 """
 '||
  || ...  ... ...  .. .. ..
@@ -10,9 +11,16 @@ Created by Dylan Araps
 import argparse
 import pathlib
 
+#import display
 from . import display
 from . import song
+#import song
+#import pywal
+import os
+from .util import reload_pywal
+import traceback
 
+#from __init__ import __version__
 from .__init__ import __version__
 
 
@@ -62,6 +70,11 @@ def main():
 
         if client.fetch_idle(["player"]):
             print("album: Received player event from mpd. Swapping cover art.")
+            try:
+                reload_pywal(args.cache_dir / "current.jpg")
+            except Exception:
+                traceback.print_exc()
+
             continue
 
 
